@@ -936,7 +936,7 @@
                         <div class="texto-itinerario">
                             <span class="hora">1:00 AM</span>
                             <span class="momento">Fin de Recepción</span>
-                            <span class="descripcion">Con mucho amor, gracias por ser parte de nuestra historia.</span>
+                            <span class="descripcion">¡Gracias por haber sido parte de nuestra historia!</span>
                         </div>
                     </div>
                 </div>
@@ -944,240 +944,177 @@
             </div>
         </section>
 
-        <!-- 11. NIÑOS -->
+        <!-- 11. TÍTULO RSVP / ASISTENCIA -->
         <div class="image-section reveal-section">
-            <img src="ninos.jpg" alt="No Niños">
+            <img src="asistencia.jpg" alt="Confirmar Asistencia">
         </div>
 
-        <!-- 12. ASISTENCIA -->
-        <div class="image-section reveal-section">
-            <img src="asistencia.jpg" alt="Asistencia">
-        </div>
-
-        <!-- 13. FORMULARIO RSVP -->
+        <!-- 12. FORMULARIO RSVP -->
         <div class="rsvp-container-wrapper reveal-section">
             <div class="tarjeta-asistencia">
-                <div class="grupo">
-                    <label class="etiqueta">Nombre completo</label>
-                    <input id="nombre" type="text" placeholder="Nombre y dos apellidos" autocomplete="name">
-                </div>
+                <form id="form-rsvp">
+                    <div class="grupo">
+                        <label class="etiqueta" for="nombre">Nombre completo</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre y apellido" required>
+                    </div>
 
-                <div class="grupo">
-                    <label class="etiqueta">Asistencia</label>
-                    <div class="opciones">
-                        <div class="opcion">
-                            <input type="radio" name="asistencia" id="si" value="SI">
-                            <label for="si">Sí asistiré</label>
-                        </div>
-                        <div class="opcion">
-                            <input type="radio" name="asistencia" id="no" value="NO">
-                            <label for="no">No asistiré</label>
+                    <div class="grupo">
+                        <span class="etiqueta">¿Nos acompañarás?</span>
+                        <div class="opciones">
+                            <div class="opcion">
+                                <input type="radio" id="asiste-si" name="asistencia" value="Sí, asistiré" required>
+                                <label for="asiste-si">¡Sí, ahí estaré!</label>
+                            </div>
+                            <div class="opcion">
+                                <input type="radio" id="asiste-no" name="asistencia" value="No podré asistir">
+                                <label for="asiste-no">No podré asistir</label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <button class="boton-confirmar" id="boton" onclick="enviar()">Enviar confirmación</button>
+                    <div class="grupo">
+                        <label class="etiqueta" for="mensaje-novios">Mensaje para los novios (opcional)</label>
+                        <input type="text" id="mensaje-novios" name="mensaje" placeholder="Dedícanos unas palabras...">
+                    </div>
 
-                <div id="mensaje" class="mensaje"></div>
+                    <button type="submit" class="boton-confirmar" id="btn-submit">Confirmar asistencia</button>
+                </form>
+
+                <div class="mensaje" id="mensaje-respuesta"></div>
             </div>
         </div>
 
-    </div>
+        <!-- 13. DESPEDIDA / CIERRE -->
+        <div class="image-section reveal-section">
+            <img src="despedida.jpg" alt="Te esperamos">
+        </div>
 
-    <!-- SOBRE -->
-    <div class="envelope-container" id="envelope" onclick="openEnvelope()">
-        <div class="flap envelope-flap-top"></div>
-        <div class="flap envelope-flap-bottom"></div>
+    </div> <!-- FIN DE .invitation-wrapper -->
+
+    <!-- SOBRE ANIMADO DE ENTRADA -->
+    <div class="envelope-container" id="envelope" onclick="abrirInvitacion()">
         <div class="flap envelope-flap-left"></div>
         <div class="flap envelope-flap-right"></div>
-
+        <div class="flap envelope-flap-bottom"></div>
+        <div class="flap envelope-flap-top"></div>
         <div class="center-group">
-            <div class="view-text">
-                Ver invitación
-            </div>
+            <div class="view-text">Abrir invitación</div>
         </div>
     </div>
 
-</div>
+</div> <!-- FIN DE .mobile-screen -->
 
 <script>
-    let isOpen = false;
-    const music = document.getElementById("bg-music");
-    const wrapper = document.getElementById("invitation");
+    // 1. APERTURA DEL SOBRE Y REPRODUCCIÓN DE MÚSICA
+    function abrirInvitacion() {
+        const envelope = document.getElementById('envelope');
+        const invitation = document.getElementById('invitation');
+        const music = document.getElementById('bg-music');
 
-    function openEnvelope() {
-        if (!isOpen) {
-            isOpen = true;
-            document.getElementById("envelope").classList.add("open");
-            wrapper.classList.add("open-portada");
-            
-            var playPromise = music.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(function(error) {
-                    console.log("Audio no reproducido automáticamente:", error);
-                });
-            }
+        envelope.classList.add('open');
+        invitation.classList.add('open-portada');
 
-            checkScroll();
+        if (music) {
+            music.play().catch(error => {
+                console.log("La reproducción automática fue bloqueada por el navegador:", error);
+            });
         }
     }
 
-    function checkScroll() {
-        const reveals = document.querySelectorAll('.reveal-section, .gallery-reveal');
-        const triggerBottom = wrapper.clientHeight * 0.9;
+    // 2. CONTADOR REGRESIVO (Ajusta la fecha y hora exacta de tu boda aquí)
+    const fechaBoda = new Date("December 12, 2026 18:00:00").getTime();
 
-        reveals.forEach(section => {
-            const sectionTop = section.getBoundingClientRect().top;
-            if (sectionTop < triggerBottom) {
-                section.classList.add('visible');
-            }
-        });
-    }
+    const intervaloContador = setInterval(() => {
+        const ahora = new Date().getTime();
+        const distancia = fechaBoda - ahora;
 
-    wrapper.addEventListener('scroll', checkScroll);
+        if (distancia < 0) {
+            clearInterval(intervaloContador);
+            document.getElementById("dias").innerText = "00";
+            document.getElementById("horas").innerText = "00";
+            document.getElementById("minutos").innerText = "00";
+            document.getElementById("segundos").innerText = "00";
+            return;
+        }
 
-    /* CARRUSEL CON ADAPTABILIDAD DINÁMICA DE ALTURA */
+        const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+        document.getElementById("dias").innerText = dias < 10 ? "0" + dias : dias;
+        document.getElementById("horas").innerText = horas < 10 ? "0" + horas : horas;
+        document.getElementById("minutos").innerText = minutos < 10 ? "0" + minutos : minutos;
+        document.getElementById("segundos").innerText = segundos < 10 ? "0" + segundos : segundos;
+    }, 1000);
+
+    // 3. CARRUSEL DE FOTOS CON ALTURA DINÁMICA
     const slider = document.getElementById('slider');
-    const images = document.querySelectorAll('.slider-container img');
-    let current = 0;
+    const slides = slider.querySelectorAll('img');
+    let currentSlide = 0;
 
-    function adjustSliderHeight() {
-        const activeImg = images[current];
-        if (activeImg.complete && activeImg.naturalHeight !== 0) {
-            slider.style.height = activeImg.clientHeight + 'px';
-        } else {
-            activeImg.onload = () => {
-                slider.style.height = activeImg.clientHeight + 'px';
-            };
+    function ajustarAlturaSlider(img) {
+        if (img && img.complete && img.naturalWidth > 0) {
+            const ratio = img.naturalHeight / img.naturalWidth;
+            slider.style.height = (slider.offsetWidth * ratio) + 'px';
         }
     }
 
-    adjustSliderHeight();
-    window.addEventListener('resize', adjustSliderHeight);
+    if (slides.length > 0) {
+        if (slides[0].complete) {
+            ajustarAlturaSlider(slides[0]);
+        } else {
+            slides[0].onload = () => ajustarAlturaSlider(slides[0]);
+        }
+    }
+
+    window.addEventListener('resize', () => ajustarAlturaSlider(slides[currentSlide]));
 
     setInterval(() => {
-        images[current].classList.remove('active');
-        current = (current + 1) % images.length;
-        images[current].classList.add('active');
-        adjustSliderHeight();
-    }, 3000);
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+        ajustarAlturaSlider(slides[currentSlide]);
+    }, 3500);
 
-    /* CONTADOR */
-    const fechaEvento = new Date("October 9, 2026 18:00:00").getTime();
+    // 4. ANIMACIONES DE APARICIÓN AL HACER SCROLL
+    const wrapper = document.getElementById('invitation');
+    const elementosAnimados = document.querySelectorAll('.reveal-section, .gallery-reveal');
 
-    function actualizarContador() {
-        const ahora = new Date().getTime();
-        const diferencia = fechaEvento - ahora;
-
-        if (diferencia <= 0) {
-            document.getElementById("dias").innerHTML = "00";
-            document.getElementById("horas").innerHTML = "00";
-            document.getElementById("minutos").innerHTML = "00";
-            document.getElementById("segundos").innerHTML = "00";
-            return;
-        }
-
-        const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diferencia % (1000 * 60)) / (1000 * 60));
-        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
-
-        document.getElementById("dias").innerHTML = String(dias).padStart(2, "0");
-        document.getElementById("horas").innerHTML = String(horas).padStart(2, "0");
-        document.getElementById("minutos").innerHTML = String(minutos).padStart(2, "0");
-        document.getElementById("segundos").innerHTML = String(segundos).padStart(2, "0");
-    }
-
-    actualizarContador();
-    setInterval(actualizarContador, 1000);
-
-    /* FORMULARIO RSVP Y CONEXIÓN CON APPS SCRIPT */
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxSe40jEh0AaM0FSkfff20dVef1NYecVhZHz--L79tINX4ehRTyIJb6RQ8nzejNxPdr/exec';
-
-    function llamarAPI(parametros) {
-        return new Promise((resolve, reject) => {
-            const callback = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
-            const script = document.createElement('script');
-            const query = new URLSearchParams({ ...parametros, callback });
-            const tiempo = setTimeout(() => { limpiar(); reject(); }, 15000);
-
-            window[callback] = function(data) {
-                clearTimeout(tiempo);
-                limpiar();
-                resolve(data);
-            };
-
-            function limpiar() {
-                delete window[callback];
-                if (script.parentNode) script.parentNode.removeChild(script);
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
             }
-
-            script.onerror = function() {
-                clearTimeout(tiempo);
-                limpiar();
-                reject();
-            };
-
-            script.src = API_URL + '?' + query.toString();
-            document.body.appendChild(script);
         });
-    }
+    }, {
+        root: wrapper,
+        threshold: 0.15
+    });
 
-    async function enviar() {
+    elementosAnimados.forEach(el => observer.observe(el));
+
+    // 5. MANEJO DEL FORMULARIO DE CONFIRMACIÓN (RSVP)
+    document.getElementById('form-rsvp').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        const respuesta = document.getElementById('mensaje-respuesta');
         const nombre = document.getElementById('nombre').value.trim();
-        const asistencia = document.querySelector('input[name="asistencia"]:checked')?.value || '';
-        const mensajeUI = document.getElementById('mensaje');
-        const boton = document.getElementById('boton');
+        const asistencia = document.querySelector('input[name="asistencia"]:checked').value;
 
-        if (!nombre) {
-            mostrarMensaje('Escribe tu nombre completo.');
-            return;
-        }
-        if (nombre.split(/\s+/).length < 3) {
-            mostrarMensaje('Escribe tu nombre y tus dos apellidos.');
-            return;
-        }
-        if (!asistencia) {
-            mostrarMensaje('Selecciona tu asistencia.');
-            return;
-        }
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
 
-        boton.disabled = true;
-        boton.textContent = 'Enviando...';
-        mensajeUI.className = 'mensaje';
-
-        try {
-            const respuesta = await llamarAPI({
-                accion: 'confirmar',
-                nombre: nombre,
-                asistencia: asistencia
-            });
-
-            if (!respuesta.ok) {
-                mostrarMensaje(respuesta.mensaje || 'Ocurrió un error al registrar tu respuesta.');
-                return;
-            }
-
-            if (asistencia === 'NO') {
-                mostrarMensaje('Lamentamos que no puedas acompañarnos, gracias por avisar.');
+        setTimeout(() => {
+            btn.style.display = "none";
+            respuesta.classList.add('visible');
+            if (asistencia.includes("Sí")) {
+                respuesta.innerHTML = `<strong>¡Muchas gracias, ${nombre}!</strong><br>Hemos registrado tu confirmación. ¡Nos hará muy felices celebrar contigo!`;
             } else {
-                mostrarMensaje(respuesta.mensaje || '¡Muchas gracias por confirmar tu asistencia!');
+                respuesta.innerHTML = `<strong>Gracias por avisarnos, ${nombre}.</strong><br>Lamentamos que no puedas acompañarnos, ¡te llevaremos en el corazón!`;
             }
-
-        } catch (error) {
-            console.error(error);
-            mostrarMensaje('No se pudo conectar con el sistema.');
-        } finally {
-            boton.disabled = false;
-            boton.textContent = 'Enviar confirmación';
-        }
-    }
-
-    function mostrarMensaje(texto) {
-        const mensaje = document.getElementById('mensaje');
-        mensaje.className = 'mensaje visible';
-        mensaje.textContent = texto;
-    }
+        }, 800);
+    });
 </script>
 
 </body>
